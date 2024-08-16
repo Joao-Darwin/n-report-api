@@ -17,8 +17,8 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  Permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: NoAction)
-  permissionId String
+  Permission   Permission  @relation(fields: [permission_id], references: [id], onDelete: NoAction)
+  permission_id String
   Ocurrences   Ocurrence[]
 }
 
@@ -43,8 +43,8 @@ model Ocurrence {
 
   User            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String
-  PoliceStation   PoliceStation? @relation(fields: [policeStationId], references: [id], onDelete: Cascade)
-  policeStationId String
+  PoliceStation   PoliceStation? @relation(fields: [policeStation_id], references: [id], onDelete: Cascade)
+  policeStation_id String
   Images          Image[]
 }
 
@@ -54,8 +54,8 @@ model Image {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  Ocurrence   Ocurrence @relation(fields: [ocurrenceId], references: [id], onDelete: Cascade)
-  ocurrenceId String
+  Ocurrence   Ocurrence @relation(fields: [ocurrence_id], references: [id], onDelete: Cascade)
+  ocurrence_id String
 }
 
 model PoliceStation {
