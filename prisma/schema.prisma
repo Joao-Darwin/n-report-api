@@ -6,3 +6,67 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  cpf        String   @unique
+  avatar     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: NoAction)
+  permissionId String
+  Ocurrences   Ocurrence[]
+}
+
+model Permission {
+  id         String   @id @default(uuid())
+  role       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Users User[]
+}
+
+model Ocurrence {
+  id          String   @id @default(uuid())
+  description String?
+  type        String   @default("Crime")
+  latitude    Float
+  longitude   Float
+  resolved    Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  User            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  PoliceStation   PoliceStation? @relation(fields: [policeStationId], references: [id], onDelete: Cascade)
+  policeStationId String
+  Images          Image[]
+}
+
+model Image {
+  id         String   @id @default(uuid())
+  path       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Ocurrence   Ocurrence @relation(fields: [ocurrenceId], references: [id], onDelete: Cascade)
+  ocurrenceId String
+}
+
+model PoliceStation {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  phone      String   @unique
+  latitude   Float
+  longitude  Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Ocurrences Ocurrence[]
+}
