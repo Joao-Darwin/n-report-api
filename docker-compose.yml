@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  db-postgres: 
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=crime_alert
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - crimealertapi-network
+
+  crimealertapi:
+    build: ./
+    depends_on:
+      - db-postgres
+    ports:
+      - "3000:3000"
+    networks:
+      - crimealertapi-network
+
+networks:
+  crimealertapi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
