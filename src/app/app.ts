@@ -10,6 +10,7 @@ app.use(cors());
 const basePathUrlApiV1 = "/api/v1";
 
 app.get(`${basePathUrlApiV1}/hello-world`, (req: Request, res: Response) => res.status(200).send({message: 'Hello World'}));
-app.get(`${basePathUrlApiV1}/users`, userRouter);
+
+app.use(`${basePathUrlApiV1}/users`, userRouter);
 
 export default app;
