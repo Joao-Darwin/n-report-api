@@ -7,5 +7,8 @@ userRouter.post("/save", UserController.create);
 userRouter.post("/saveAdminUser", UserController.createAdminUser); // This endpoint will have permission middleware, to check if who's creating is other admin
 userRouter.get("/", UserController.findAll); // Add auth middleware and add permission middleware
 userRouter.get("/:id", UserController.findById); // Add auth middleware and add permission middleware
+// userRouter.get("/me", UserController.findMe); // Add auth middleware
+userRouter.put("/:id", UserController.update); // Add auth middleware and add permission middleware
+// userRouter.put("/me", UserController.updateMe); // Add auth middleware
 
 export default userRouter;

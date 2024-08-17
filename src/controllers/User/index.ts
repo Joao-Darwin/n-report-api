@@ -132,9 +132,53 @@ const findById = async (req: Request, res: Response) => {
     }
 }
 
+const update = async (req: Request, res: Response) => {
+    try {
+        const id = req.params?.id;
+
+        const userToCreate: IUserCreateDTO = req.body;
+        userToCreate.password = await createHashPassword(userToCreate.password);
+
+        const user = await User.update({
+            where: { id: id },
+            data: {
+                ...userToCreate,
+                avatar: ''
+            },
+            select: {
+                id: true,
+                avatar: true,
+                name: true,
+                email: true,
+                cpf: true,
+                created_at: true,
+                updated_at: true,
+                Permission: {
+                    select: {
+                        role: true
+                    }
+                }
+            }
+        });
+
+        if (user) {
+            return res.status(200).send(user);
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try find user"
+        })
+    }
+}
+
 export default {
     create,
     createAdminUser,
     findAll,
-    findById
+    findById,
+    update
 }
