@@ -78,7 +78,26 @@ const createAdminUser = async (req: Request, res: Response) => {
     }
 }
 
+const findAll = async (req: Request, res: Response) => {
+    try {
+        const allUsers = await User.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true
+            }
+        })
+
+        res.status(200).send(allUsers);
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try find user"
+        })
+    }
+}
+
 export default {
     create,
-    createAdminUser
+    createAdminUser,
+    findAll
 }
