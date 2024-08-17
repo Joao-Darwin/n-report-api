@@ -1,16 +1,17 @@
 import { Router } from "express";
 import UserController from "../../controllers/User";
-import { authenticationMiddleware } from "../../middlewares/AuthenticationMiddleware";
+import { authentication } from "../../middlewares/Authentication";
+import Authorization from "../../middlewares/Authorization";
 
 const userRouter = Router();
 
-userRouter.post("/saveAdminUser", authenticationMiddleware, UserController.createAdminUser); // add permission middleware
-userRouter.get("/", authenticationMiddleware, UserController.findAll); // add permission middleware
-userRouter.get("/:id", authenticationMiddleware, UserController.findById); // add permission middleware
-// userRouter.get("/me", authenticationMiddleware, UserController.findMe);
-userRouter.put("/:id", authenticationMiddleware, UserController.update); // add permission middleware
-// userRouter.put("/me", authenticationMiddleware, UserController.updateMe);
-userRouter.delete("/:id", authenticationMiddleware, UserController.remove) // add permission middleware
-// userRouter.delete("/me", authenticationMiddleware, UserController.removeMe);
+userRouter.post("/save", authentication, Authorization.authorizationAdmin, UserController.createAdminUser);
+userRouter.get("/", authentication, Authorization.authorizationAdmin, UserController.findAll);
+userRouter.get("/:id", authentication, Authorization.authorizationAdmin, UserController.findById);
+// userRouter.get("/me", authentication, UserController.findMe);
+userRouter.put("/:id", authentication, Authorization.authorizationAdmin, UserController.update);
+// userRouter.put("/me", authentication, UserController.updateMe);
+userRouter.delete("/:id", authentication, Authorization.authorizationAdmin, UserController.remove)
+// userRouter.delete("/me", authentication, UserController.removeMe);
 
 export default userRouter;
