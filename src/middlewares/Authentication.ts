@@ -7,7 +7,7 @@ type TokenPayload = {
     exp: number;
 }
 
-export const authenticationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authentication = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { authorization } = req.headers;
 
