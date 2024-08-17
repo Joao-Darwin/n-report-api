@@ -10,5 +10,7 @@ userRouter.get("/:id", UserController.findById); // Add auth middleware and add 
 // userRouter.get("/me", UserController.findMe); // Add auth middleware
 userRouter.put("/:id", UserController.update); // Add auth middleware and add permission middleware
 // userRouter.put("/me", UserController.updateMe); // Add auth middleware
+userRouter.delete("/:id", UserController.remove) // Add auth middleware and add permission middleware
+// userRouter.delete("/me", UserController.removeMe) // Add auth middleware
 
 export default userRouter;
