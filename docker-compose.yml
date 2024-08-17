@@ -5,26 +5,26 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=crime_alert
+      - POSTGRES_DB=n_report
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
     networks:
-      - crimealertapi-network
+      - nreportapi-network
 
-  crimealertapi:
+  nreportapi:
     build: ./
     depends_on:
       - db-postgres
     ports:
       - "3000:3000"
     networks:
-      - crimealertapi-network
+      - nreportapi-network
 
 networks:
-  crimealertapi-network:
+  nreportapi-network:
     driver: bridge
 
 volumes:

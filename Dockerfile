@@ -1,6 +1,6 @@
 FROM node:20.11.1
 
-WORKDIR /crimealertapi
+WORKDIR /nreportapi
 
 RUN apt-get update && apt-get upgrade -y
 

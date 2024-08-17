@@ -1,5 +1,5 @@
 {
-  "name": "crimealertapi",
+  "name": "nreportapi",
   "version": "1.0.0",
   "description": "aplicação onde você pode alertar crimes em uma determinado localização.",
   "main": "index.ts",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Joao-Darwin/crime-alert-api.git"
+    "url": "git+https://github.com/Joao-Darwin/n-report-api.git"
   },
   "keywords": [
     "crime",
@@ -21,9 +21,9 @@
   "author": "João Darwin, Antônio Lacerda, Eduardo Denis",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Joao-Darwin/crime-alert-api/issues"
+    "url": "https://github.com/Joao-Darwin/n-report-api/issues"
   },
-  "homepage": "https://github.com/Joao-Darwin/crime-alert-api#readme",
+  "homepage": "https://github.com/Joao-Darwin/n-report-api#readme",
   "dependencies": {
     "@prisma/client": "^5.6.0",
     "bcrypt": "^5.1.1",

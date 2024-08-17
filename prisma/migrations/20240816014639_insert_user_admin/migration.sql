@@ -5,7 +5,7 @@ INSERT INTO "User" (id, name, email, password, cpf, avatar, created_at, updated_
 VALUES (
   gen_random_uuid(),
   'Admin',
-  'admin@crimealert.com',
+  'admin@nreport.com',
   '$2y$10$4JPATwVWGbo0eadV76.V6e.Gx05/U22i0Fz4q30porMgXPfQQc1MG',
   '12345678900',
   'path',
