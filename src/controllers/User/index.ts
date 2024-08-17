@@ -96,8 +96,45 @@ const findAll = async (req: Request, res: Response) => {
     }
 }
 
+const findById = async (req: Request, res: Response) => {
+    try {
+        const id = req.params?.id;
+
+        const user = await User.findFirst({
+            where: { id: id },
+            select: {
+                id: true,
+                avatar: true,
+                name: true,
+                email: true,
+                cpf: true,
+                created_at: true,
+                updated_at: true,
+                Permission: {
+                    select: {
+                        role: true
+                    }
+                }
+            }
+        });
+
+        if (user) {
+            return res.status(200).send(user);
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try find user"
+        })
+    }
+}
+
 export default {
     create,
     createAdminUser,
-    findAll
+    findAll,
+    findById
 }
