@@ -98,6 +98,37 @@ const findById = async (req: Request, res: Response) => {
     }
 }
 
+const profile = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId
+
+        const user = await User.findFirst({
+            where: { id: id },
+            select: {
+                id: true,
+                avatar: true,
+                name: true,
+                email: true,
+                cpf: true,
+                created_at: true,
+                updated_at: true
+            }
+        });
+
+        if (user) {
+            return res.status(200).send(user);
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try find user"
+        })
+    }
+}
+
 const update = async (req: Request, res: Response) => {
     try {
         const id = req.params?.id;
@@ -167,6 +198,7 @@ export default {
     createAdminUser,
     findAll,
     findById,
+    profile,
     update,
     remove
 }
