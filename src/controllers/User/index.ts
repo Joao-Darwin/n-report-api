@@ -146,7 +146,7 @@ const update = async (req: Request, res: Response) => {
         })
     } catch (error: any) {
         res.status(500).send({
-            message: "Error on try find user"
+            message: "Error on try update user"
         })
     }
 }
@@ -202,7 +202,7 @@ const updateSelf = async (req: Request, res: Response) => {
         })
     } catch (error: any) {
         res.status(500).send({
-            message: "Error on try find user"
+            message: "Error on try update user"
         })
     }
 }
@@ -224,7 +224,29 @@ const remove = async (req: Request, res: Response) => {
         })
     } catch (error: any) {
         res.status(500).send({
-            message: "Error on try find user"
+            message: "Error on try delete user"
+        })
+    }
+}
+
+const removeSelf = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId;
+
+        const user = await User.delete({ where: { id: id } })
+
+        if (user) {
+            return res.status(200).send({
+                message: "User deleted"
+            });
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try delete user"
         })
     }
 }
@@ -236,5 +258,6 @@ export default {
     profile,
     update,
     updateSelf,
-    remove
+    remove,
+    removeSelf
 }

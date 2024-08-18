@@ -7,7 +7,7 @@ const userRouter = Router();
 
 userRouter.get("/profile", authentication, UserController.profile);
 userRouter.put("/self", authentication, UserController.updateSelf);
-// userRouter.delete("/me", authentication, UserController.removeMe);
+userRouter.delete("/self", authentication, UserController.removeSelf);
 userRouter.post("/save", authentication, Authorization.authorizationAdmin, UserController.createAdminUser);
 userRouter.get("/", authentication, Authorization.authorizationAdmin, UserController.findAll);
 userRouter.get("/:id", authentication, Authorization.authorizationAdmin, UserController.findById);
