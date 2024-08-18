@@ -6,7 +6,7 @@ import Authorization from "../../middlewares/Authorization";
 const userRouter = Router();
 
 userRouter.get("/profile", authentication, UserController.profile);
-// userRouter.put("/me", authentication, UserController.updateMe);
+userRouter.put("/self", authentication, UserController.updateSelf);
 // userRouter.delete("/me", authentication, UserController.removeMe);
 userRouter.post("/save", authentication, Authorization.authorizationAdmin, UserController.createAdminUser);
 userRouter.get("/", authentication, Authorization.authorizationAdmin, UserController.findAll);
