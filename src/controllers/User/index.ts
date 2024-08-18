@@ -98,19 +98,12 @@ const findById = async (req: Request, res: Response) => {
     }
 }
 
-const update = async (req: Request, res: Response) => {
+const profile = async (req: Request, res: Response) => {
     try {
-        const id = req.params?.id;
+        const id = req.userId
 
-        const userToCreate: IUserCreateDTO = req.body;
-        userToCreate.password = await createHashPassword(userToCreate.password);
-
-        const user = await User.update({
+        const user = await User.findFirst({
             where: { id: id },
-            data: {
-                ...userToCreate,
-                avatar: ''
-            },
             select: {
                 id: true,
                 avatar: true,
@@ -118,12 +111,7 @@ const update = async (req: Request, res: Response) => {
                 email: true,
                 cpf: true,
                 created_at: true,
-                updated_at: true,
-                Permission: {
-                    select: {
-                        role: true
-                    }
-                }
+                updated_at: true
             }
         });
 
@@ -141,11 +129,89 @@ const update = async (req: Request, res: Response) => {
     }
 }
 
+const update = async (req: Request, res: Response) => {
+    try {
+        const id = req.params?.id;
+
+        const userToCreate: IUserCreateDTO = req.body;
+
+        const user = await updateUser(id, userToCreate);
+
+        if (user) {
+            return res.status(200).send(user);
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try update user"
+        })
+    }
+}
+
+const updateUser = async (userId: string, userToCreate: IUserCreateDTO) => {
+    userToCreate.password = await createHashPassword(userToCreate.password);
+
+    return await User.update({
+        where: { id: userId },
+        data: {
+            ...userToCreate,
+            avatar: ''
+        },
+        select: {
+            id: true,
+            avatar: true,
+            name: true,
+            email: true,
+            cpf: true,
+            created_at: true,
+            updated_at: true,
+            Permission: {
+                select: {
+                    role: true
+                }
+            }
+        }
+    });
+}
+
+const updateSelf = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId;
+
+        const userToCreate: IUserCreateDTO = req.body;
+
+        const user = await updateUser(id, userToCreate);
+
+        if (user) {
+            return res.status(200).send(user);
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+
+        if (user) {
+            return res.status(200).send(user);
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try update user"
+        })
+    }
+}
+
 const remove = async (req: Request, res: Response) => {
     try {
         const id = req.params?.id;
 
-        const user = await User.delete({where: {id: id}})
+        const user = await User.delete({ where: { id: id } })
 
         if (user) {
             return res.status(200).send({
@@ -158,7 +224,29 @@ const remove = async (req: Request, res: Response) => {
         })
     } catch (error: any) {
         res.status(500).send({
-            message: "Error on try find user"
+            message: "Error on try delete user"
+        })
+    }
+}
+
+const removeSelf = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId;
+
+        const user = await User.delete({ where: { id: id } })
+
+        if (user) {
+            return res.status(200).send({
+                message: "User deleted"
+            });
+        }
+
+        res.status(404).send({
+            message: "User not found"
+        })
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try delete user"
         })
     }
 }
@@ -167,6 +255,9 @@ export default {
     createAdminUser,
     findAll,
     findById,
+    profile,
     update,
-    remove
+    updateSelf,
+    remove,
+    removeSelf
 }
