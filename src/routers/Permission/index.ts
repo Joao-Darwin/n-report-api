@@ -9,5 +9,6 @@ permissionRouters.post("/", authentication, Authorization.authorizationAdmin, Pe
 permissionRouters.get("/", authentication, Authorization.authorizationAdmin, Permission.findAll);
 permissionRouters.get("/:id", authentication, Authorization.authorizationAdmin, Permission.findById);
 permissionRouters.put("/:id", authentication, Authorization.authorizationAdmin, Permission.update);
+permissionRouters.delete("/:id", authentication, Authorization.authorizationAdmin, Permission.remove);
 
 export default permissionRouters;
