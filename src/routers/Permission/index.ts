@@ -8,5 +8,6 @@ const permissionRouters = Router();
 permissionRouters.post("/", authentication, Authorization.authorizationAdmin, Permission.create);
 permissionRouters.get("/", authentication, Authorization.authorizationAdmin, Permission.findAll);
 permissionRouters.get("/:id", authentication, Authorization.authorizationAdmin, Permission.findById);
+permissionRouters.put("/:id", authentication, Authorization.authorizationAdmin, Permission.update);
 
 export default permissionRouters;

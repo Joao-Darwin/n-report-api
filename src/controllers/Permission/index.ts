@@ -66,8 +66,41 @@ const findById = async (req: Request, res: Response) => {
     }
 }
 
+const update = async (req: Request, res: Response) => {
+    try {
+        const permissionId = req.params.id;
+        const permission: IPermissionCreateDTO = req.body;
+
+        const permissionUpdated = await Permission.update({
+            where: {
+                id: permissionId
+            },
+            data: {
+                ...permission
+            },
+            select: {
+                id: true,
+                role: true
+            }
+        })
+
+        if (!permissionUpdated) {
+            return res.status(404).send({
+                message: "Permission not found"
+            })
+        }
+
+        res.status(200).send(permissionUpdated);
+    } catch (error) {
+        res.status(501).send({
+            message: "Error on try create permission"
+        });
+    }
+}
+
 export default {
     create,
     findAll,
-    findById
+    findById,
+    update
 }
