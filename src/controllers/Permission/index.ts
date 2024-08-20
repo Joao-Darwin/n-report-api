@@ -19,7 +19,7 @@ const create = async (req: Request, res: Response) => {
 
         res.status(200).send(permissionCreated);
     } catch (error) {
-        res.status(501).send({
+        res.status(500).send({
             message: "Error on try create permission"
         });
     }
@@ -36,7 +36,7 @@ const findAll = async (req: Request, res: Response) => {
 
         res.status(200).send(allPermissions);
     } catch (error) {
-        res.status(501).send({
+        res.status(500).send({
             message: "Error on try create permission"
         });
     }
@@ -60,7 +60,7 @@ const findById = async (req: Request, res: Response) => {
 
         res.status(200).send(permission);
     } catch (error) {
-        res.status(501).send({
+        res.status(500).send({
             message: "Error on try create permission"
         });
     }
@@ -92,7 +92,7 @@ const update = async (req: Request, res: Response) => {
 
         res.status(200).send(permissionUpdated);
     } catch (error) {
-        res.status(501).send({
+        res.status(500).send({
             message: "Error on try create permission"
         });
     }
@@ -118,7 +118,7 @@ const remove = async (req: Request, res: Response) => {
             message: "Permission deleted"
         });
     } catch (error) {
-        res.status(501).send({
+        res.status(500).send({
             message: "Error on try create permission"
         });
     }
