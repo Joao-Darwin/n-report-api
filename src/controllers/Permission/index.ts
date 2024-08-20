@@ -25,6 +25,24 @@ const create = async (req: Request, res: Response) => {
     }
 }
 
+const findAll = async (req: Request, res: Response) => {
+    try {
+        const allPermissions = await Permission.findMany({
+            select: {
+                id: true,
+                role: true
+            }
+        })
+
+        res.status(200).send(allPermissions);
+    } catch (error) {
+        res.status(501).send({
+            message: "Error on try create permission"
+        });
+    }
+}
+
 export default {
-    create
+    create,
+    findAll
 }
