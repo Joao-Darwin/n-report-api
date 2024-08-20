@@ -42,7 +42,32 @@ const findAll = async (req: Request, res: Response) => {
     }
 }
 
+const findById = async (req: Request, res: Response) => {
+    try {
+        const permissionId = req.params.id;
+
+        const permission = await Permission.findUnique({
+            where: {
+                id: permissionId
+            }
+        })
+
+        if (!permission) {
+            return res.status(404).send({
+                message: "Permission not found"
+            })
+        }
+
+        res.status(200).send(permission);
+    } catch (error) {
+        res.status(501).send({
+            message: "Error on try create permission"
+        });
+    }
+}
+
 export default {
     create,
-    findAll
+    findAll,
+    findById
 }
