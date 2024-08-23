@@ -4,6 +4,7 @@ import userRouter from "../routers/User"
 import authRouter from "../routers/Authentication";
 import permissionRouters from "../routers/Permission";
 import ocurrenceRouter from "../routers/Ocurrence";
+import policeStationRouter from "../routers/PoliceStation";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use("/auth", authRouter);
 app.use(`${basePathUrlApiV1}/users`, userRouter);
 app.use(`${basePathUrlApiV1}/permissions`, permissionRouters);
 app.use(`${basePathUrlApiV1}/ocurrences`, ocurrenceRouter);
+app.use(`${basePathUrlApiV1}/policeStation`, policeStationRouter);
 
 export default app;
