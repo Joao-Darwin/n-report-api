@@ -8,13 +8,23 @@ interface IOcurrenceCreateDTO {
     type: string,
     latitude: number,
     longitude: number,
-    resolved: boolean,
-    policeStation: string
+    policeStation_id: string,
 }
 
 const createOcurrence = async (req: Request, res: Response) => {
     try {
         const ocurrenceToCreate: IOcurrenceCreateDTO = req.body;
+
+        ocurrenceToCreate.latitude = Number(ocurrenceToCreate.latitude);
+        ocurrenceToCreate.longitude = Number(ocurrenceToCreate.longitude);
+
+        const reqImagens = req.files as Express.Multer.File[];
+
+        const images = reqImagens.map((img)=> {
+            return {
+                path: img.filename,
+            }
+        })
 
         const userExist = await User.findUnique({
             where: {
@@ -28,7 +38,7 @@ const createOcurrence = async (req: Request, res: Response) => {
 
         const policeStation = await PoliceStation.findUnique({
             where: {
-                id: ocurrenceToCreate.policeStation
+                id: ocurrenceToCreate.policeStation_id
             }
         })
 
@@ -37,10 +47,12 @@ const createOcurrence = async (req: Request, res: Response) => {
         }
 
         const ocurrenceResponse = await Ocurrence.create({
-            data: {
+             data: {
                 ...ocurrenceToCreate,
                 user_id: userExist.id,
-                policeStation_id: policeStation.id
+                Images: {
+                    create: images 
+                }
             },
             select: {
                 id: true,
@@ -65,10 +77,12 @@ const createOcurrence = async (req: Request, res: Response) => {
         })
 
         res.status(200).send(ocurrenceResponse);
-    } catch (error: any) {
+    } catch (error) {
+        console.error("Detailed Error:", error);
         res.status(500).send({
-            message: "Error on try create Ocurrence"
-        })
+            message: "Error on try create Ocurrence",
+            error: error
+        });
     }
 } 
 
@@ -158,13 +172,24 @@ const update = async (req: Request, res: Response) => {
 
         const ocurrenceToCreate: IOcurrenceCreateDTO = req.body;
 
+        const reqImagens = req.files as Express.Multer.File[];
+
+        const images = reqImagens.map((img)=>{
+            return {
+                path: img.filename,
+            }
+        })
+
         const ocurrence = await Ocurrence.update({
             where: {
                 id: id,
                 user_id: user,
             },
             data: {
-                ...ocurrenceToCreate,      
+                ...ocurrenceToCreate,
+                Images: {
+                    create: images 
+                }    
             },
             select: {
                 id: true,
@@ -203,8 +228,6 @@ const remove = async (req: Request, res: Response) => {
         const id = req.params?.id;
 
         const user = req.userId;
-
-
 
         const ocurrence = await Ocurrence.delete({
             where: {

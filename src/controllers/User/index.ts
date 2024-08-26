@@ -183,7 +183,7 @@ const updateSelf = async (req: Request, res: Response) => {
 
         const userToCreate: IUserCreateDTO = req.body;
 
-        const user = await updateUser(id, userToCreate);
+        const user = await updateUser(id as string, userToCreate);
 
         if (user) {
             return res.status(200).send(user);
