@@ -22,10 +22,12 @@ const createAdminUser = async (req: Request, res: Response) => {
             return res.status(400).send({ message: "User role not found" });
         }
 
+        const avatar = req.file ? req.file.filename : '';
+
         const userResponse = await User.create({
             data: {
                 ...userToCreate,
-                avatar: '',
+                avatar: avatar,
                 permission_id: userPermission.id
             },
             select: {
@@ -85,7 +87,16 @@ const findById = async (req: Request, res: Response) => {
         });
 
         if (user) {
-            return res.status(200).send(user);
+            if (user) {
+                const avatarUrl = user.avatar 
+                    ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                    : null;
+    
+                return res.status(200).send({
+                    ...user,
+                    avatar: avatarUrl
+                });
+            }
         }
 
         res.status(404).send({
@@ -116,7 +127,14 @@ const profile = async (req: Request, res: Response) => {
         });
 
         if (user) {
-            return res.status(200).send(user);
+            const avatarUrl = user.avatar 
+                ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                : null;
+
+            return res.status(200).send({
+                ...user,
+                avatar: avatarUrl
+            });
         }
 
         res.status(404).send({
@@ -135,10 +153,21 @@ const update = async (req: Request, res: Response) => {
 
         const userToCreate: IUserCreateDTO = req.body;
 
-        const user = await updateUser(id, userToCreate);
+        const avatar = req.file ? req.file.filename : '';
+
+        const user = await updateUser(id, userToCreate, avatar);
 
         if (user) {
-            return res.status(200).send(user);
+            if (user) {
+                const avatarUrl = user.avatar 
+                    ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                    : null;
+    
+                return res.status(200).send({
+                    ...user,
+                    avatar: avatarUrl
+                });
+            }
         }
 
         res.status(404).send({
@@ -151,14 +180,14 @@ const update = async (req: Request, res: Response) => {
     }
 }
 
-const updateUser = async (userId: string, userToCreate: IUserCreateDTO) => {
+const updateUser = async (userId: string, userToCreate: IUserCreateDTO, avatar: string) => {
     userToCreate.password = await createHashPassword(userToCreate.password);
 
     return await User.update({
         where: { id: userId },
         data: {
             ...userToCreate,
-            avatar: ''
+            avatar: avatar
         },
         select: {
             id: true,
@@ -183,27 +212,30 @@ const updateSelf = async (req: Request, res: Response) => {
 
         const userToCreate: IUserCreateDTO = req.body;
 
-        const user = await updateUser(id as string, userToCreate);
+        const avatar = req.file ? req.file.filename : '';
+
+        const user = await updateUser(id as string, userToCreate, avatar);
 
         if (user) {
-            return res.status(200).send(user);
+            if (user) {
+                const avatarUrl = user.avatar 
+                    ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                    : null;
+    
+                return res.status(200).send({
+                    ...user,
+                    avatar: avatarUrl
+                });
+            }
         }
 
         res.status(404).send({
             message: "User not found"
-        })
-
-        if (user) {
-            return res.status(200).send(user);
-        }
-
-        res.status(404).send({
-            message: "User not found"
-        })
+        });
     } catch (error: any) {
         res.status(500).send({
             message: "Error on try update user"
-        })
+        });
     }
 }
 
