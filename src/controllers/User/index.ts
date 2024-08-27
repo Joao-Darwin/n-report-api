@@ -87,7 +87,16 @@ const findById = async (req: Request, res: Response) => {
         });
 
         if (user) {
-            return res.status(200).send(user);
+            if (user) {
+                const avatarUrl = user.avatar 
+                    ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                    : null;
+    
+                return res.status(200).send({
+                    ...user,
+                    avatar: avatarUrl
+                });
+            }
         }
 
         res.status(404).send({
@@ -118,7 +127,14 @@ const profile = async (req: Request, res: Response) => {
         });
 
         if (user) {
-            return res.status(200).send(user);
+            const avatarUrl = user.avatar 
+                ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                : null;
+
+            return res.status(200).send({
+                ...user,
+                avatar: avatarUrl
+            });
         }
 
         res.status(404).send({
@@ -142,7 +158,16 @@ const update = async (req: Request, res: Response) => {
         const user = await updateUser(id, userToCreate, avatar);
 
         if (user) {
-            return res.status(200).send(user);
+            if (user) {
+                const avatarUrl = user.avatar 
+                    ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                    : null;
+    
+                return res.status(200).send({
+                    ...user,
+                    avatar: avatarUrl
+                });
+            }
         }
 
         res.status(404).send({
@@ -192,7 +217,16 @@ const updateSelf = async (req: Request, res: Response) => {
         const user = await updateUser(id as string, userToCreate, avatar);
 
         if (user) {
-            return res.status(200).send(user);
+            if (user) {
+                const avatarUrl = user.avatar 
+                    ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
+                    : null;
+    
+                return res.status(200).send({
+                    ...user,
+                    avatar: avatarUrl
+                });
+            }
         }
 
         res.status(404).send({
