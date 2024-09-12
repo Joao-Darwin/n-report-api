@@ -110,9 +110,7 @@ const findAll = async (req: Request, res: Response) => {
                         phone: true,
                     }
                 }
-            }, where: {
-                user_id: user,
-            }
+            },
         })
 
         res.status(200).send(allOcurrences);
