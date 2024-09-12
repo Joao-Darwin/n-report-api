@@ -88,10 +88,10 @@ const findById = async (req: Request, res: Response) => {
 
         if (user) {
             if (user) {
-                const avatarUrl = user.avatar 
+                const avatarUrl = user.avatar
                     ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
                     : null;
-    
+
                 return res.status(200).send({
                     ...user,
                     avatar: avatarUrl
@@ -122,12 +122,17 @@ const profile = async (req: Request, res: Response) => {
                 email: true,
                 cpf: true,
                 created_at: true,
-                updated_at: true
+                updated_at: true,
+                Permission: {
+                    select: {
+                        role: true
+                    }
+                }
             }
         });
 
         if (user) {
-            const avatarUrl = user.avatar 
+            const avatarUrl = user.avatar
                 ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
                 : null;
 
@@ -159,10 +164,10 @@ const update = async (req: Request, res: Response) => {
 
         if (user) {
             if (user) {
-                const avatarUrl = user.avatar 
+                const avatarUrl = user.avatar
                     ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
                     : null;
-    
+
                 return res.status(200).send({
                     ...user,
                     avatar: avatarUrl
@@ -218,10 +223,10 @@ const updateSelf = async (req: Request, res: Response) => {
 
         if (user) {
             if (user) {
-                const avatarUrl = user.avatar 
+                const avatarUrl = user.avatar
                     ? `${req.protocol}://${req.get('host')}/images/${user.avatar}`
                     : null;
-    
+
                 return res.status(200).send({
                     ...user,
                     avatar: avatarUrl

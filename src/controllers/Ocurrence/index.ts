@@ -4,10 +4,13 @@ import User from "../../models/User";
 import PoliceStation from "../../models/PoliceStation";
 
 interface IOcurrenceCreateDTO {
+    title: string,
     description?: string,
     type: string,
     latitude: number,
     longitude: number,
+    date: string,
+    time: string,
     policeStation_id: string,
 }
 

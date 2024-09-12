@@ -33,10 +33,13 @@ model Permission {
 
 model Ocurrence {
   id          String   @id @default(uuid())
+  title       String
   description String?
   type        String   @default("Crime")
   latitude    Float
   longitude   Float
+  date        String
+  time        String
   resolved    Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
