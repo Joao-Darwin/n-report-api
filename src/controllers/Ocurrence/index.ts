@@ -59,10 +59,13 @@ const createOcurrence = async (req: Request, res: Response) => {
             },
             select: {
                 id: true,
+                title: true,
                 description: true,
                 type: true,
                 latitude: true,
                 longitude: true,
+                date: true,
+                time: true,
                 resolved: true,
                 User: {
                     select: {
@@ -96,10 +99,13 @@ const findAll = async (req: Request, res: Response) => {
         const allOcurrences = await Ocurrence.findMany({
             select: {
                 id: true,
+                title: true,
                 description: true,
                 type: true,
                 latitude: true,
                 longitude: true,
+                date: true,
+                time: true,
                 resolved: true,
                 User: {
                     select: {
@@ -113,7 +119,7 @@ const findAll = async (req: Request, res: Response) => {
                         phone: true,
                     }
                 }
-            },
+            }
         })
 
         res.status(200).send(allOcurrences);
