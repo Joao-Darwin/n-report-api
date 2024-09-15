@@ -23,7 +23,7 @@ const createOcurrence = async (req: Request, res: Response) => {
 
         const reqImagens = req.files as Express.Multer.File[];
 
-        const images = reqImagens.map((img)=> {
+        const images = reqImagens.map((img) => {
             return {
                 path: img.filename,
             }
@@ -35,8 +35,8 @@ const createOcurrence = async (req: Request, res: Response) => {
             }
         })
 
-        if (!userExist){
-            return res.status(404).send({message: "User not found!"});
+        if (!userExist) {
+            return res.status(404).send({ message: "User not found!" });
         }
 
         const policeStation = await PoliceStation.findUnique({
@@ -45,16 +45,16 @@ const createOcurrence = async (req: Request, res: Response) => {
             }
         })
 
-        if (!policeStation){
-            return res.status(404).send({message: "Police Station not found!"});
+        if (!policeStation) {
+            return res.status(404).send({ message: "Police Station not found!" });
         }
 
         const ocurrenceResponse = await Ocurrence.create({
-             data: {
+            data: {
                 ...ocurrenceToCreate,
                 user_id: userExist.id,
                 Images: {
-                    create: images 
+                    create: images
                 }
             },
             select: {
@@ -90,11 +90,11 @@ const createOcurrence = async (req: Request, res: Response) => {
             error: error
         });
     }
-} 
+}
 
 const findAll = async (req: Request, res: Response) => {
     const user = req.userId;
-    
+
     try {
         const allOcurrences = await Ocurrence.findMany({
             select: {
@@ -118,12 +118,30 @@ const findAll = async (req: Request, res: Response) => {
                         name: true,
                         phone: true,
                     }
+                },
+                Images: {
+                    select: {
+                        path: true
+                    }
                 }
+            }
+        });
+
+        const allOcurrencesWithImages = allOcurrences.map((ocurrence) => {
+            const images = ocurrence.Images.map((value) => {
+                return {
+                    path: `${req.protocol}://${req.get('host')}/images/${value.path}`
+                }
+            })
+
+            return {
+                ...ocurrence,
+                Images: images
             }
         })
 
-        res.status(200).send(allOcurrences);
-    } catch(error: any) {
+        res.status(200).send(allOcurrencesWithImages);
+    } catch (error: any) {
         res.status(500).send({
             message: "Error on try find all ocurrences"
         })
@@ -158,17 +176,35 @@ const findById = async (req: Request, res: Response) => {
                         name: true,
                         phone: true,
                     }
+                },
+                Images: {
+                    select: {
+                        path: true
+                    }
                 }
             }
         });
 
-        if (!ocurrence){
-            return res.status(404).send({message: "Ocurrence not found!"});
+        if (ocurrence) {
+            const images = ocurrence.Images.map((value) => {
+                return {
+                    path: `${req.protocol}://${req.get('host')}/images/${value.path}`
+                }
+            })
+
+            return res.status(200).send({
+                ...ocurrence,
+                Images: images
+            });
+        }
+
+        if (!ocurrence) {
+            return res.status(404).send({ message: "Ocurrence not found!" });
         }
 
         res.status(200).send(ocurrence);
     } catch (error: any) {
-        res.status(500).send({message: "Error on try find an ocurrence"});
+        res.status(500).send({ message: "Error on try find an ocurrence" });
     }
 }
 
@@ -181,7 +217,7 @@ const update = async (req: Request, res: Response) => {
 
         const reqImagens = req.files as Express.Multer.File[];
 
-        const images = reqImagens.map((img)=>{
+        const images = reqImagens.map((img) => {
             return {
                 path: img.filename,
             }
@@ -195,8 +231,8 @@ const update = async (req: Request, res: Response) => {
             data: {
                 ...ocurrenceToCreate,
                 Images: {
-                    create: images 
-                }    
+                    create: images
+                }
             },
             select: {
                 id: true,
@@ -220,13 +256,13 @@ const update = async (req: Request, res: Response) => {
             }
         })
 
-        if(!ocurrence) {
-            return res.status(404).send({message: "Ocurrence not found!"}) 
+        if (!ocurrence) {
+            return res.status(404).send({ message: "Ocurrence not found!" })
         }
 
         res.status(200).send(ocurrence);
-    } catch(error: any) {
-        res.status(500).send({message: "Error on try update ocurrence"})
+    } catch (error: any) {
+        res.status(500).send({ message: "Error on try update ocurrence" })
     }
 }
 
@@ -243,13 +279,13 @@ const remove = async (req: Request, res: Response) => {
             }
         })
 
-        if(!ocurrence){
+        if (!ocurrence) {
             return res.status(404).send("Ocurrence not found!")
         }
 
-        return res.status(200).send({message: "Ocurrence deleted"})
-    } catch(error: any) {
-        res.status(500).send({message: "Error on try delete ocurrence!"})
+        return res.status(200).send({ message: "Ocurrence deleted" })
+    } catch (error: any) {
+        res.status(500).send({ message: "Error on try delete ocurrence!" })
     }
 }
 
@@ -258,5 +294,5 @@ export default {
     findAll,
     findById,
     update,
-    remove, 
+    remove,
 }
