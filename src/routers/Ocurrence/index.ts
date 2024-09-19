@@ -9,6 +9,7 @@ const upload = multer(uploadsConfig);
 
 ocurrenceRouter.post("/save", authentication, upload.array("images"), OcurrenceController.createOcurrence);
 ocurrenceRouter.get("/", authentication, OcurrenceController.findAll);
+ocurrenceRouter.get("/self", authentication, OcurrenceController.findAllSelf);
 ocurrenceRouter.get("/:id", authentication, OcurrenceController.findById);
 ocurrenceRouter.put("/:id", authentication, OcurrenceController.update);
 ocurrenceRouter.delete("/:id", authentication, OcurrenceController.remove);

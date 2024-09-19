@@ -93,7 +93,6 @@ const createOcurrence = async (req: Request, res: Response) => {
 }
 
 const findAll = async (req: Request, res: Response) => {
-    const user = req.userId;
 
     try {
         const allOcurrences = await Ocurrence.findMany({
@@ -124,6 +123,59 @@ const findAll = async (req: Request, res: Response) => {
                         path: true
                     }
                 }
+            }
+        });
+
+        const allOcurrencesWithImages = allOcurrences.map((ocurrence) => {
+            const images = ocurrence.Images.map((value) => {
+                return {
+                    path: `${req.protocol}://${req.get('host')}/images/${value.path}`
+                }
+            })
+
+            return {
+                ...ocurrence,
+                Images: images
+            }
+        })
+
+        res.status(200).send(allOcurrencesWithImages);
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try find all ocurrences"
+        })
+    }
+}
+
+const findAllSelf = async (req: Request, res: Response) => {
+    const user = req.userId;
+
+    try {
+        const allOcurrences = await Ocurrence.findMany({
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                type: true,
+                latitude: true,
+                longitude: true,
+                date: true,
+                time: true,
+                resolved: true,
+                PoliceStation: {
+                    select: {
+                        name: true,
+                        phone: true,
+                    }
+                },
+                Images: {
+                    select: {
+                        path: true
+                    }
+                }
+            },
+            where: {
+                user_id: user
             }
         });
 
@@ -270,14 +322,35 @@ const remove = async (req: Request, res: Response) => {
     try {
         const id = req.params?.id;
 
-        const user = req.userId;
-
-        const ocurrence = await Ocurrence.delete({
+        const user = await User.findFirst({
+            select: {
+                Permission: {
+                    select: {
+                        role: true
+                    }
+                }
+            },
             where: {
-                id,
-                user_id: user,
+                id: req.userId
             }
-        })
+        });
+
+        let ocurrence;
+
+        if (user?.Permission.role === 'admin') {
+            ocurrence = await Ocurrence.delete({
+                where: {
+                    id,
+                }
+            })
+        } else {
+            ocurrence = await Ocurrence.delete({
+                where: {
+                    id,
+                    user_id: req.userId,
+                }
+            })
+        }
 
         if (!ocurrence) {
             return res.status(404).send("Ocurrence not found!")
@@ -292,6 +365,7 @@ const remove = async (req: Request, res: Response) => {
 export default {
     createOcurrence,
     findAll,
+    findAllSelf,
     findById,
     update,
     remove,
