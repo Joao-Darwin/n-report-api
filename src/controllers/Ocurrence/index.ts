@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Ocurrence from "../../models/Ocurrence";
-import User from "../../models/User";
 import PoliceStation from "../../models/PoliceStation";
+import User from "../../models/User";
 
 interface IOcurrenceCreateDTO {
     title: string,
@@ -69,6 +69,7 @@ const createOcurrence = async (req: Request, res: Response) => {
                 resolved: true,
                 User: {
                     select: {
+                        id: true,
                         name: true,
                         avatar: true,
                     }
@@ -108,18 +109,21 @@ const findAll = async (req: Request, res: Response) => {
                 resolved: true,
                 User: {
                     select: {
+                        id: true,
                         name: true,
                         avatar: true,
                     }
                 },
                 PoliceStation: {
                     select: {
+                        id: true,
                         name: true,
                         phone: true,
                     }
                 },
                 Images: {
                     select: {
+                        id: true,
                         path: true
                     }
                 }
@@ -129,6 +133,7 @@ const findAll = async (req: Request, res: Response) => {
         const allOcurrencesWithImages = allOcurrences.map((ocurrence) => {
             const images = ocurrence.Images.map((value) => {
                 return {
+                    id: value.id,
                     path: `${req.protocol}://${req.get('host')}/images/${value.path}`
                 }
             })
@@ -162,14 +167,23 @@ const findAllSelf = async (req: Request, res: Response) => {
                 date: true,
                 time: true,
                 resolved: true,
+                User: {
+                    select: {
+                        id: true,
+                        name: true,
+                        avatar: true,
+                    }
+                },
                 PoliceStation: {
                     select: {
+                        id: true,
                         name: true,
                         phone: true,
                     }
                 },
                 Images: {
                     select: {
+                        id: true,
                         path: true
                     }
                 }
@@ -182,6 +196,7 @@ const findAllSelf = async (req: Request, res: Response) => {
         const allOcurrencesWithImages = allOcurrences.map((ocurrence) => {
             const images = ocurrence.Images.map((value) => {
                 return {
+                    id: value.id,
                     path: `${req.protocol}://${req.get('host')}/images/${value.path}`
                 }
             })
@@ -219,6 +234,7 @@ const findById = async (req: Request, res: Response) => {
                 resolved: true,
                 User: {
                     select: {
+                        id: true,
                         name: true,
                         avatar: true,
                     }
@@ -231,6 +247,7 @@ const findById = async (req: Request, res: Response) => {
                 },
                 Images: {
                     select: {
+                        id: true,
                         path: true
                     }
                 }
@@ -263,11 +280,28 @@ const findById = async (req: Request, res: Response) => {
 const update = async (req: Request, res: Response) => {
     try {
         const id = req.params?.id;
-        const user = req.userId;
+        const idUser = req.userId;
 
-        const ocurrenceToCreate: IOcurrenceCreateDTO = req.body;
+        const user = await User.findFirst({
+            select: {
+                Permission: {
+                    select: {
+                        role: true
+                    }
+                }
+            },
+            where: {
+                id: idUser
+            }
+        });
+
+        const ocurrenceToUpdate: IOcurrenceCreateDTO = req.body;
+
+        ocurrenceToUpdate.latitude = Number(ocurrenceToUpdate.latitude);
+        ocurrenceToUpdate.longitude = Number(ocurrenceToUpdate.longitude);
 
         const reqImagens = req.files as Express.Multer.File[];
+
 
         const images = reqImagens.map((img) => {
             return {
@@ -275,15 +309,26 @@ const update = async (req: Request, res: Response) => {
             }
         })
 
-        const ocurrence = await Ocurrence.update({
-            where: {
+        let whereFromUpdate;
+
+        if (user?.Permission.role === 'admin') {
+            whereFromUpdate = {
+                id: id
+            }
+        } else {
+            whereFromUpdate = {
                 id: id,
-                user_id: user,
-            },
+                user_id: idUser,
+            }
+
+        }
+
+        const ocurrence = await Ocurrence.update({
+            where: whereFromUpdate,
             data: {
-                ...ocurrenceToCreate,
+                ...ocurrenceToUpdate,
                 Images: {
-                    create: images
+                    create: images,
                 }
             },
             select: {
@@ -314,6 +359,7 @@ const update = async (req: Request, res: Response) => {
 
         res.status(200).send(ocurrence);
     } catch (error: any) {
+        console.log(error)
         res.status(500).send({ message: "Error on try update ocurrence" })
     }
 }

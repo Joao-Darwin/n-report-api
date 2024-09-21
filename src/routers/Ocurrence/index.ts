@@ -11,7 +11,7 @@ ocurrenceRouter.post("/save", authentication, upload.array("images"), OcurrenceC
 ocurrenceRouter.get("/", authentication, OcurrenceController.findAll);
 ocurrenceRouter.get("/self", authentication, OcurrenceController.findAllSelf);
 ocurrenceRouter.get("/:id", authentication, OcurrenceController.findById);
-ocurrenceRouter.put("/:id", authentication, OcurrenceController.update);
+ocurrenceRouter.put("/:id", authentication, upload.array("images"), OcurrenceController.update);
 ocurrenceRouter.delete("/:id", authentication, OcurrenceController.remove);
 
 export default ocurrenceRouter;

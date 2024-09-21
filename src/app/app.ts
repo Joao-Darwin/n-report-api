@@ -6,6 +6,7 @@ import permissionRouters from "../routers/Permission";
 import ocurrenceRouter from "../routers/Ocurrence";
 import policeStationRouter from "../routers/PoliceStation";
 import path from "path";
+import imageRouter from "../routers/Image";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(`${basePathUrlApiV1}/users`, userRouter);
 app.use(`${basePathUrlApiV1}/permissions`, permissionRouters);
 app.use(`${basePathUrlApiV1}/ocurrences`, ocurrenceRouter);
 app.use(`${basePathUrlApiV1}/policeStation`, policeStationRouter);
+app.use(`${basePathUrlApiV1}/images`, imageRouter);
 app.use("/images", express.static(path.join(__dirname, "..", "..", "uploads")));
 
 export default app;
