@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createHashPassword } from "../../utils/bcrypt";
+import { createHashPassword, compareHashWithTextPassword } from "../../utils/bcrypt";
 import User from "../../models/User";
 import Permission from "../../models/Permission";
 
@@ -244,6 +244,51 @@ const updateSelf = async (req: Request, res: Response) => {
     }
 }
 
+const updatePassword = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId;
+
+        const user = await User.findFirst({
+            where: {
+                id,
+            }, select: {
+                password: true
+            }
+        });
+
+        const passwords = req.body;
+
+        const hashPass = await compareHashWithTextPassword(passwords.actualPass, user?.password as string);        // console.log(passwords.actualPass);
+        
+        if(!hashPass){
+            return res.status(400).send("Senhas diferentes!");
+        }
+
+        const senhaNova = await createHashPassword(passwords.newPass);
+        
+        const newUser = await User.update({
+            where: {
+                id,
+            },
+            data: {
+                password: senhaNova
+            },
+            select: {
+                id: true,
+                password: true,
+            }
+        });
+
+        return res.status(200).send("Senha atualizada com sucesso!");
+
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try update password: ",
+            error
+        })
+    }
+}
+
 const remove = async (req: Request, res: Response) => {
     try {
         const id = req.params?.id;
@@ -296,5 +341,6 @@ export default {
     update,
     updateSelf,
     remove,
-    removeSelf
+    removeSelf,
+    updatePassword
 }
