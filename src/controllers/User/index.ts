@@ -259,13 +259,13 @@ const updatePassword = async (req: Request, res: Response) => {
         const passwords = req.body;
 
         const hashPass = await compareHashWithTextPassword(passwords.actualPass, user?.password as string);        // console.log(passwords.actualPass);
-        
-        if(!hashPass){
+
+        if (!hashPass) {
             return res.status(400).send("Senhas diferentes!");
         }
 
         const senhaNova = await createHashPassword(passwords.newPass);
-        
+
         const newUser = await User.update({
             where: {
                 id,
@@ -285,6 +285,30 @@ const updatePassword = async (req: Request, res: Response) => {
         res.status(500).send({
             message: "Error on try update password: ",
             error
+        })
+    }
+}
+
+const updateEmail = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId;
+        const { email } = req.body;
+
+        console.log(email)
+
+        const user = await User.update({
+            where: {
+                id: id
+            },
+            data: {
+                email: email
+            }
+        });
+
+        return res.status(200).send("Email updated with success!");
+    } catch (error: any) {
+        res.status(500).send({
+            message: "Error on try update email"
         })
     }
 }
@@ -340,7 +364,8 @@ export default {
     profile,
     update,
     updateSelf,
+    updatePassword,
+    updateEmail,
     remove,
     removeSelf,
-    updatePassword
 }

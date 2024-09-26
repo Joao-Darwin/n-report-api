@@ -10,6 +10,7 @@ const upload = multer(multerConfig);
 
 userRouter.get("/profile", authentication, UserController.profile);
 userRouter.put("/updatePass", authentication, UserController.updatePassword);
+userRouter.put("/updateEmail", authentication, UserController.updateEmail);
 userRouter.put("/self", authentication, upload.single('avatar'), UserController.updateSelf);
 userRouter.delete("/self", authentication, UserController.removeSelf);
 userRouter.post("/save", authentication, Authorization.authorizationAdmin, upload.single('avatar'), UserController.createAdminUser);
