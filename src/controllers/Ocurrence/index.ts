@@ -21,14 +21,6 @@ const createOcurrence = async (req: Request, res: Response) => {
         ocurrenceToCreate.latitude = Number(ocurrenceToCreate.latitude);
         ocurrenceToCreate.longitude = Number(ocurrenceToCreate.longitude);
 
-        const reqImagens = req.files as Express.Multer.File[];
-
-        const images = reqImagens.map((img) => {
-            return {
-                path: img.filename,
-            }
-        })
-
         const userExist = await User.findUnique({
             where: {
                 id: req.userId
@@ -53,9 +45,6 @@ const createOcurrence = async (req: Request, res: Response) => {
             data: {
                 ...ocurrenceToCreate,
                 user_id: userExist.id,
-                Images: {
-                    create: images
-                }
             },
             select: {
                 id: true,
@@ -121,30 +110,10 @@ const findAll = async (req: Request, res: Response) => {
                         phone: true,
                     }
                 },
-                Images: {
-                    select: {
-                        id: true,
-                        path: true
-                    }
-                }
             }
         });
 
-        const allOcurrencesWithImages = allOcurrences.map((ocurrence) => {
-            const images = ocurrence.Images.map((value) => {
-                return {
-                    id: value.id,
-                    path: `${req.protocol}://${req.get('host')}/images/${value.path}`
-                }
-            })
-
-            return {
-                ...ocurrence,
-                Images: images
-            }
-        })
-
-        res.status(200).send(allOcurrencesWithImages);
+        res.status(200).send(allOcurrences);
     } catch (error: any) {
         res.status(500).send({
             message: "Error on try find all ocurrences"
@@ -181,39 +150,86 @@ const findAllSelf = async (req: Request, res: Response) => {
                         phone: true,
                     }
                 },
-                Images: {
-                    select: {
-                        id: true,
-                        path: true
-                    }
-                }
             },
             where: {
                 user_id: user
             }
         });
 
-        const allOcurrencesWithImages = allOcurrences.map((ocurrence) => {
-            const images = ocurrence.Images.map((value) => {
-                return {
-                    id: value.id,
-                    path: `${req.protocol}://${req.get('host')}/images/${value.path}`
-                }
-            })
-
-            return {
-                ...ocurrence,
-                Images: images
-            }
-        })
-
-        res.status(200).send(allOcurrencesWithImages);
+        res.status(200).send(allOcurrences);
     } catch (error: any) {
         res.status(500).send({
             message: "Error on try find all ocurrences"
         })
     }
 }
+
+const ocurrenceCount = async (req: Request, res: Response) => {
+    try {
+        const response = await Ocurrence.count();
+
+        res.status(200).send({count: response});
+    } catch (error) {
+        res.status(500).send({
+            message: "Error on try count all ocurrences",
+            error,
+        })
+    }
+}
+
+const ocurrenceCountSelf = async (req: Request, res: Response) => {
+    const user = req.userId;
+
+    try {
+        const allOcurrences = await Ocurrence.count({
+            where: {
+                user_id: user,
+            }
+        });
+
+        res.status(200).send({count: allOcurrences});
+    } catch (error) {
+        res.status(500).send({
+            message: "Error on try find all ocurrences",
+            error,
+        });
+    }
+}
+
+const murderCount = async (req: Request, res: Response) => {
+    try {
+        const response = await Ocurrence.count({
+            where: {
+                type: 'homicidio',
+            }
+        });
+
+        res.status(200).send({count: response});
+
+    } catch (error) {
+        res.status(500).send({
+            message: 'Error on try to find all murders',
+            error,
+        })
+    }
+}
+
+const theftCount = async (req: Request, res: Response) => {
+    try {
+        const response = await Ocurrence.count({
+            where: {
+                type: 'furto',
+            }
+        });
+
+        res.status(200).send({count: response});
+    } catch (error) {
+        res.status(500).send({
+            message: 'Error on try to find all thefts',
+            error,
+        })
+    }
+} 
 
 const findById = async (req: Request, res: Response) => {
     try {
@@ -223,14 +239,16 @@ const findById = async (req: Request, res: Response) => {
         const ocurrence = await Ocurrence.findFirst({
             where: {
                 id,
-                user_id: user,
             },
             select: {
                 id: true,
+                title: true,
                 description: true,
                 type: true,
                 latitude: true,
                 longitude: true,
+                date: true,
+                time: true,
                 resolved: true,
                 User: {
                     select: {
@@ -245,27 +263,9 @@ const findById = async (req: Request, res: Response) => {
                         phone: true,
                     }
                 },
-                Images: {
-                    select: {
-                        id: true,
-                        path: true
-                    }
-                }
             }
         });
 
-        if (ocurrence) {
-            const images = ocurrence.Images.map((value) => {
-                return {
-                    path: `${req.protocol}://${req.get('host')}/images/${value.path}`
-                }
-            })
-
-            return res.status(200).send({
-                ...ocurrence,
-                Images: images
-            });
-        }
 
         if (!ocurrence) {
             return res.status(404).send({ message: "Ocurrence not found!" });
@@ -300,14 +300,6 @@ const update = async (req: Request, res: Response) => {
         ocurrenceToUpdate.latitude = Number(ocurrenceToUpdate.latitude);
         ocurrenceToUpdate.longitude = Number(ocurrenceToUpdate.longitude);
 
-        const reqImagens = req.files as Express.Multer.File[];
-
-
-        const images = reqImagens.map((img) => {
-            return {
-                path: img.filename,
-            }
-        })
 
         let whereFromUpdate;
 
@@ -327,9 +319,6 @@ const update = async (req: Request, res: Response) => {
             where: whereFromUpdate,
             data: {
                 ...ocurrenceToUpdate,
-                Images: {
-                    create: images,
-                }
             },
             select: {
                 id: true,
@@ -412,6 +401,10 @@ export default {
     createOcurrence,
     findAll,
     findAllSelf,
+    ocurrenceCount,
+    ocurrenceCountSelf,
+    murderCount,
+    theftCount,
     findById,
     update,
     remove,

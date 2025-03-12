@@ -11,7 +11,12 @@ import imageRouter from "../routers/Image";
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:3000", // ⚠ Defina o domínio permitido
+        credentials: true, // ⚠ Permite envio de cookies e headers de autenticação
+    })
+);
 
 const basePathUrlApiV1 = "/api/v1";
 

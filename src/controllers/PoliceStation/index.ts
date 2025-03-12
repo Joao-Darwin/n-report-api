@@ -40,8 +40,6 @@ const findAll = async (req: Request, res: Response) => {
             select: {
                 id: true,
                 name: true,
-                email: true,
-                phone: true,
             }
         })
 

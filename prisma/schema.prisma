@@ -48,7 +48,6 @@ model Ocurrence {
   user_id          String
   PoliceStation    PoliceStation? @relation(fields: [policeStation_id], references: [id], onDelete: Cascade)
   policeStation_id String
-  Images           Image[]
 }
 
 model Image {
@@ -56,9 +55,6 @@ model Image {
   path       String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
-  Ocurrence    Ocurrence @relation(fields: [ocurrence_id], references: [id], onDelete: Cascade)
-  ocurrence_id String
 }
 
 model PoliceStation {
